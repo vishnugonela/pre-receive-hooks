@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Name: Reject All Pushes
-# Description: Immediately reject any push that occurs on the repository.
+# Description: Immediately reject any push that occurs on the repository. Useful when you need to lock a repository.
 #
 # Author: James Garcia <james.rob.garcia@hpe.com>
 # Organization Unit: Enterprise Group IT
