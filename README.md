@@ -8,7 +8,12 @@ A **hook** in a repository is a script that executes before or after events such
 
 **GitHub Enterprise (GHE)** allows the usage of **pre-receive hooks** in its Git repositories with the help of its Site Administrators. This repository is used to host the pre-receive hook scripts and is maintained by the GHE Site Administrator team _(**Support** link is located at the bottom of this page)_.
 
-In short, a **pre-receive hook** is a script that is executed when a push occurs in a GHE repository. You can use a pre-receive hook to perform an action or check that must occur when a push happens. For example, you can use hooks to check commit message syntax, verify a commit message is not blank, block all pushes, etc.
+In short, a [pre-receive hook](https://help.github.com/enterprise/2.7/admin/guides/developer-workflow/about-pre-receive-hooks/) is a script that is executed when a push occurs in a GHE repository. You can use a pre-receive hook to perform an action or check that must occur when a push happens. For example, you can use hooks to check commit message syntax, verify a commit message is not blank, block all pushes, etc.
+
+## Things to consider
+
+- All pre-receive-hooks that are implemented are visible by all repositories on the GHE server, but it is disabled by default. Despite this, all repository owners will have the option to enable it if they browse the hooks section in their repository settings.
+- All pre-receive-hooks proposed and implemented should generally be consumable by any repository since they will be visible by anyone.
 
 ## How do I set up a pre-receive hook?
 
@@ -16,8 +21,8 @@ Setting up a pre-receive hook on this GHE instance requires the help of the **Si
 
 **To set up a new pre-receive hook:**
 
-1. **Fork** the [pre-receive-hooks](https://github.hpe.com/GitHub/pre-receive-hooks) repo.
-2. In your fork, create the new hook script.
+1. [Fork](https://help.github.com/articles/fork-a-repo/)] the [pre-receive-hooks](https://github.hpe.com/GitHub/pre-receive-hooks) repository.
+2. In your fork, create the new hook script in the **hooks** directory. At the top of the hook, add a comments section including script **Name, Description, Author, Organization Unit** and **Team** for future reference by others who may wish to use your hook script. _(See the example [always_reject.sh](https://github.hpe.com/GitHub/pre-receive-hooks/blob/doc-update/hooks/always_reject.sh) for help.)_
 3. Push the **changes** to your fork and create a [Pull Request (PR)](https://help.github.com/articles/about-pull-requests/) when you are done or would like to start a conversation with the site admins.
 4. In the Pull Request comments, suggest a **friendly name** for the hook.
 5. The site admins will **review** the changes in the PR:.
