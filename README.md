@@ -8,7 +8,7 @@ A **hook** in a repository is a script that executes before or after events such
 
 **GitHub Enterprise (GHE)** allows the usage of **pre-receive hooks** in its Git repositories with the help of its Site Administrators. This repository is used to host the pre-receive hook scripts and is maintained by the GHE Site Administrator team
 
-**NOTE:** The **Support** link is located at the bottom of this page.
+_**NOTE:** The **Support** link is located at the bottom of this page._
 
 In short, a [pre-receive hook](https://help.github.com/enterprise/2.7/admin/guides/developer-workflow/about-pre-receive-hooks/) is a script that is executed when a push occurs in a GHE repository. You can use a pre-receive hook to perform an action or check that must occur when a push happens. For example, you can use hooks to check commit message syntax, verify a commit message is not blank, block all pushes, etc.
 
