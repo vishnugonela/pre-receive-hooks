@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+#
+# Script Friendly Name: Reject All Pushes
+# Script Description: Immediately reject any push that occurs on the repository.
+#
+# Author: James Garcia <james.rob.garcia@hpe.com>
+# Organization Unit: Enterprise Group IT
+# Team: Research & Development IT
+#
 
 echo " ";
 echo "ERROR:  +------------------------------------------------------------+";
@@ -10,4 +18,3 @@ echo "ERROR:  +------------------------------------------------------------+";
 echo " ";
 
 exit 1;
-
