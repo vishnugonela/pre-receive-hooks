@@ -14,7 +14,7 @@ In short, a [pre-receive hook](https://help.github.com/enterprise/2.7/admin/guid
 
 ## How do I add or change a hook?
 
-For details on adding a new or changing an existing hook, see our [CONTRIBUTING.md](https://github.hpe.com/GitHub/pre-receive-hooks/blob/doc-update/CONTRIBUTING.md) document.
+For details on adding a new or changing an existing hook, see our [CONTRIBUTING.md](https://github.hpe.com/GitHub/pre-receive-hooks/blob/master/CONTRIBUTING.md) document.
 
 ## References
 
