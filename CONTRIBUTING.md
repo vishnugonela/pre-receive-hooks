@@ -15,7 +15,7 @@ Setting up a pre-receive hook on this GHE instance requires the help of the **Si
 
 1. [Fork](https://help.github.com/articles/fork-a-repo/) the [pre-receive-hooks](https://github.hpe.com/GitHub/pre-receive-hooks) repository.
 2. In your fork, create the new hook script in the **hooks** directory. At the top of the hook, add a comments section including script **Name, Description, Author, Organization Unit** and **Team** for future reference by others who may wish to use your hook script.
-    - See our [example](https://github.hpe.com/GitHub/pre-receive-hooks/blob/doc-update/hooks/always_reject.sh) for reference.
+    - See our [example](https://github.hpe.com/GitHub/pre-receive-hooks/blob/master/hooks/always_reject.sh) for reference.
 3. Push the **changes** to your fork and create a [Pull Request](https://help.github.com/articles/about-pull-requests/) (PR) when you are done or when you would like to start a conversation with the site admins.
 4. The site admins will **review** the changes in the PR:.
     - If the script looks **good**, the site admins will **merge** the PR..
