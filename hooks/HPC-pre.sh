@@ -1,9 +1,9 @@
- #! /bin/sh
+ #! /bin/sh -x
 
 # NOTE: This hook requires the following alpine+openssh environment:
 #       docker/hpc.pre.receive.false.tar.gz
 
-SSH_OPTIONS="-q -x -o UserKnownHostsFile=/dev/null -o strictHostKeyChecking=no"
+SSH_OPTIONS="-q -x -o strictHostKeyChecking=no"
 SSH_USER=ghe
 SSH_HOST=salsa.engr.sgi.com
 SSH_HOST=137.38.153.239		# XXX: HPE yet do not DNS resolve sgi.com 
