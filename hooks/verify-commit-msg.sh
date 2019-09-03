@@ -2,7 +2,8 @@
 #
 # Name: Verify 1st commit message(Heading of pull request) in git push
 # Description: Reject pushes that contain commit with message that does not adhere to defined regex. Useful to link github commits to jira issues
-#
+# Exit-code: If jira id  is not  mentioned in 1st commit message of a pull request, this script will exit with error code 1 and  push will be rejected. 
+
 # Author: Jasmeen Kamboj <jasmeen.kamboj@hpe.com>
 # Organization Unit: Infosight
 # Team: Devops
