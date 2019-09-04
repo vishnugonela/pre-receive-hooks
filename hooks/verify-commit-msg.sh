@@ -2,7 +2,7 @@
 #
 # Name: Verify 1st commit message(Heading of pull request) in git push
 # Description: Reject pushes that contain commit with message that does not adhere to defined regex. Useful to link github commits to jira issues
-# Exit-code: If jira id  is not  mentioned in 1st commit message of a pull request, this script will exit with error code 1 and  push will be rejected. 
+# Exit-code: If jira id  is not  mentioned in 1st commit message of a pull request, this script will exit with error code 1 and  push will be rejected.
 
 # Author: Jasmeen Kamboj <jasmeen.kamboj@hpe.com>
 # Organization Unit: Infosight
@@ -22,7 +22,7 @@ while  read -r old_rev new_rev ref ; do
   [ $old_rev = $zero_commit ] && range=$new_rev || range=$old_rev..$new_rev
 
   for commit in $(git rev-list $range --reverse) ; do
-    if ! git log --max-count=1 --format=%B $commit | grep -e "[A-Z]\+-\\d\+"; then
+    if ! git log --max-count=1 --format=%B $commit | grep -e "\(IS\|ISHD\|ESC\|ICSE\)-\d\+"; then
       echo "ERROR"
       echo "Your push was rejected because"
       echo "ERROR: $commit in ${ref#refs/heads/}"
