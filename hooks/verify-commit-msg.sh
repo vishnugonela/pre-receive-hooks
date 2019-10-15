@@ -22,7 +22,8 @@ while  read -r old_rev new_rev ref ; do
   [ $old_rev = $zero_commit ] && range=$new_rev || range=$old_rev..$new_rev
 
   for commit in $(git rev-list $range --reverse) ; do
-    if ! `git log --max-count=1 --format=%B $commit` | grep -e "\(IS\|ISHD\|ESC\|ICSE\)-\d\+"; then
+    message=$(git show -s --format=%B $commit)
+    if ! echo $message | grep -qE "(IS|ISHD|ESC|ICSE)-[0-9]+"; then
       echo "ERROR"
       echo "Your push was rejected because"
       echo "ERROR: $commit in ${ref#refs/heads/}"
