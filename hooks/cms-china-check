@@ -49,11 +49,11 @@ check_jiracr_nocr()
                 echo "[POLICY] Your message of commit ${commit_id} contains 'NOCR:' but reason '${nocr_reason}' is not valid"
                 echo "[POLICY] Valid reasons are:"
                 echo ${NOCR_REASONS} | sed -e s/@/\"/g | sed -e "s/--/\n/g" | while read l; do echo $l; done
-                exit 2
+                return 2
             fi
         else
             echo "[POLICY] Your message in commit ${commit_id} must contain JIRA CR id (e.g. CMSCHF-123) or 'NOCR:<reason>'"
-            exit 2
+            return 2
         fi
     fi
 }
@@ -162,7 +162,10 @@ while  read -r old_rev new_rev ref ; do
     tmp_file=`mktemp msgXXXXX`
     for rev in ${missed_revs} ; do
         git cat-file commit ${rev} | sed '1,/^$/d' > $tmp_file
-        check_jiracr_nocr $tmp_file $rev
+        if ! check_jiracr_nocr $tmp_file $rev ; then
+            rm -f $tmp_file
+            exit 2
+        fi
     done
     rm -f $tmp_file
     exit 0
