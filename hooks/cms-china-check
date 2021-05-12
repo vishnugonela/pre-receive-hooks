@@ -1,0 +1,173 @@
+#!/bin/bash
+#
+# Name: Verify commit message, branches and tags changes in git push
+# Description: Reject pushes that contain commit with message that does not adhere to defined regex. Reject tag update and delete, dev branch create and delete.
+# Exit-code: If jira id  is not  mentioned in 1st commit message of a pull request, this script will exit with error code 1 and  push will be rejected.
+
+# Author: Gong, Guang-Qi (PSW CMS R&D) <guangqi.gong@hpe.com>
+# Organization Unit: CMS China
+# Team: CMS China DevOps
+#
+
+# skip none CMS-China repo
+if [[ ! "$GITHUB_REPO_NAME" =~ ^"CMS-China/" ]]; then
+    exit 0
+fi
+
+# admin skip
+if [ "${GITHUB_USER_LOGIN}" == "cms_china_admin" ] ; then
+    echo "[POLICY] Hello admin!"
+    echo "[POLICY] You have the power. I hope you are being careful!!!"
+    exit 0
+fi
+
+
+ZEROREF=0000000000000000000000000000000000000000
+
+# check if the message contains JIRA CR id
+JIRA_RE="CMS[A-Z]{3}-[0-9]{3}"
+NOCR_RE="NOCR:[ \t]*\([A-Za-z0-9_-]\+\)"
+NOCR_REASONS="\
+@quickfix@: Easy fix for accidentally found potential problem in the code--
+@cleanup@: Simple code cleanup (indentation, comments, variable names etc.)--
+@docfix@: Fixes in chints and other documentation--
+@internal@: Changes/fixes in code only used internally by CMS China team--
+@admin@: Changes to the build system etc., not to be used by developers--
+"
+check_jiracr_nocr()
+{
+    msg_file=$1
+    commit_id=`git rev-parse --short $2`
+    grep -E "${JIRA_RE}" $msg_file > /dev/null 2>&1
+    if [ $? -ne 0 ] ; then
+        # no JIRA CR id in the comment, check "NOCR"
+        nocr_reason=`sed -n -e "s/^.*${NOCR_RE}.*$/\1/p" $msg_file`
+
+        if [ -n "${nocr_reason}" ] ; then
+            echo ${NOCR_REASONS} | grep "@${nocr_reason}@" > /dev/null 2>&1
+            if  [ $? -ne 0 ] ; then
+                echo "[POLICY] Your message of commit ${commit_id} contains 'NOCR:' but reason '${nocr_reason}' is not valid"
+                echo "[POLICY] Valid reasons are:"
+                echo ${NOCR_REASONS} | sed -e s/@/\"/g | sed -e "s/--/\n/g" | while read l; do echo $l; done
+                return 2
+            fi
+        else
+            echo "[POLICY] Your message in commit ${commit_id} must contain JIRA CR id (e.g. CMSCHF-123) or 'NOCR:<reason>'"
+            return 2
+        fi
+    fi
+}
+
+find_branch_base()
+{
+    new_commit=$1
+    branch_base=""
+    for branch_name in `git show-ref --heads -s` ; do
+        cur_branch_base=`git merge-base $branch_name $new_commit`
+        if [ "$cur_branch_base" == "" ] ; then
+            return
+        fi
+        num_revs=`git rev-list $cur_branch_base..$new_commit | wc -l`
+        if [ "$min_num_revs" == "" ] || [ $num_revs -lt $min_num_revs ] ; then
+            min_num_revs=$num_revs
+            branch_base=$cur_branch_base
+        fi
+    done
+}
+
+
+while  read -r old_rev new_rev ref ; do
+    echo "${ref}: ${old_rev:0:7}..${new_rev:0:7}"
+
+    # tag check
+    TAG_RE="^refs/tags/"
+    echo ${ref} | grep -E "${TAG_RE}" > /dev/null 2>&1
+    if [ $? -eq 0 ] ; then
+        if [ "$old_rev" == "$ZEROREF" ] ; then
+            exit 0
+        else
+            echo "[POLICY] You are only allowed to create new tags"
+            exit 9
+        fi
+    fi
+
+    # branches
+    OBSOLETE_BRANCHES=""
+    for bn in ${OBSOLETE_BRANCHES} ; do
+        if [ "${ref}" == "refs/heads/${bn}" ] ; then
+            echo "[POLICY] Branch ${ref} is obsolete. Update not allowed"
+            exit 11
+        fi;
+    done
+
+    NEXT_BRANCH_RE="^refs/heads/next($|-)"
+    CPE_BRANCH_RE="^refs/heads/.*_cpe$"
+    CUST_BRANCH_RE="^refs/heads/.*_cust$"
+    INTEGRATION_BRANCH_RE="(^refs/heads/integration-)"
+    USER_BRANCH_RE="^refs/heads/${GITHUB_USER_LOGIN}-"
+
+    NEXT_BRANCH=`echo ${ref} | grep -E -c "${NEXT_BRANCH_RE}"`
+    CPE_BRANCH=`echo ${ref} | grep -E -c "${CPE_BRANCH_RE}"`
+    CUST_BRANCH=`echo ${ref} | grep -E -c "${CUST_BRANCH_RE}"`
+    INTEGRATION_BRANCH=`echo ${ref} | grep -E -c "${INTEGRATION_BRANCH_RE}"`
+    USER_BRANCH=`echo ${ref} | grep -E -c "${USER_BRANCH_RE}"`
+
+    if [ ${NEXT_BRANCH} -eq 0 -a ${CPE_BRANCH} -eq 0 -a ${CUST_BRANCH} -eq 0 -a ${INTEGRATION_BRANCH} -eq 0 -a ${USER_BRANCH} -eq 0 ] ; then
+        # this is neither "standard" next or next- or _cpe branch, nor a user branch
+        echo "[POLICY] Updating this branch (${ref}) is not allowed"
+        echo "[POLICY] You are only allowed to update next, next-*, integration-*, *_cpe, *_cust and ${GITHUB_USER_LOGIN}-* branches"
+        exit 5
+    fi
+
+    CREATE_BRANCH=0
+    if [ "$old_rev" == "$ZEROREF" ] ; then
+        if [ ${USER_BRANCH} -eq 0 -a ${INTEGRATION_BRANCH} -eq 0 ] ; then
+            echo "[POLICY] New branch creation (${ref}) not allowed"
+            exit 3
+        else
+            CREATE_BRANCH=1
+        fi
+    fi
+
+    if [ "$new_rev" == "$ZEROREF" ] ; then
+        if [ ${USER_BRANCH} -eq 0 ] ; then
+            echo "[POLICY] Branch deletion (${ref}) not allowed"
+            exit 4
+        else
+            exit 0
+        fi
+    fi
+
+    # Merge commits should not be done on development and cpe branch
+    if [ $NEXT_BRANCH -eq 1 -o $CPE_BRANCH -eq 1 ] ; then
+        merge_revs=`git rev-list --merges $old_rev..$new_rev`
+        if [ -n "$merge_revs" ] ; then
+            echo "[POLICY] Merges are forbidden on next, next-*, *_cpe branches"
+            exit 12
+        fi
+    fi
+
+    if [ $CREATE_BRANCH -eq 1 ] ; then
+        find_branch_base $new_rev
+        if [ "$branch_base" == "" ] ; then
+            echo "[POLICY] Your branch tip ${new_rev} is not a descendant of any existing branch, branch creation not allowed"
+            exit 10
+        fi
+        missed_revs=`git rev-list $branch_base..$new_rev`
+    else
+        missed_revs=`git rev-list $old_rev..$new_rev`
+    fi
+
+    # commit message check
+    tmp_file=`mktemp msgXXXXX`
+    for rev in ${missed_revs} ; do
+        git cat-file commit ${rev} | sed '1,/^$/d' > $tmp_file
+        if ! check_jiracr_nocr $tmp_file $rev ; then
+            rm -f $tmp_file
+            exit 2
+        fi
+    done
+    rm -f $tmp_file
+    exit 0
+done
+
