@@ -1,10 +1,9 @@
-#!/usr/bin/env ruby
-message_file = ARGV[0]
-message = File.read(message_file)
+#!/bin/bash
+# regex to validate in commit msg
+commit_regex='(HPEFS-[0-9]+)'
+error_msg="Aborting commit. Your commit message is missing JIRA Issue ID. Please put JIRA ID in start of commit msg. Example HPEFS-XXXXX'"
 
-$regex = /HPEFS-(\d+)/
-
-if !$regex.match(message)
-  puts "[POLICY] Your commit message is not formatted correctly, Please make sure your commit message starts with JIRA issue # for example HPEFS-XXXX."
-  exit 1
-end
+if ! grep -iqE "$commit_regex" "$1"; then
+    echo "$error_msg" >&2
+    exit 1
+fi
