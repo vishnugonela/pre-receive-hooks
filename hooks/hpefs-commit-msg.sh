@@ -19,8 +19,7 @@ while read -r oldrev newrev refname; do
 			echo "ERROR: $commit in ${refname#refs/heads/}"
 			echo "ERROR: is missing the JIRA Issue 'HPEFS-123'."
 			echo "ERROR:"
-			echo "ERROR: Please fix the commit message and push again."
-			echo "ERROR: https://help.github.com/en/articles/changing-a-commit-message"
+			echo "ERROR: Please fix the commit message and push again."		
 			echo "ERROR"
 			exit 1
 		fi
