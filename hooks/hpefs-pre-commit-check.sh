@@ -3,7 +3,7 @@
 set -e
 
 zero_commit='0000000000000000000000000000000000000000'
-msg_regex='/*\[HPEFS-.+?\]'
+msg_regex='/*HPEFS-.+?'
 
 while read -r oldrev newrev refname; do
 
@@ -18,7 +18,7 @@ while read -r oldrev newrev refname; do
 			echo "ERROR:"
 			echo "ERROR: Your push was rejected because the commit"
 			echo "ERROR: $commit in ${refname#refs/heads/}"
-			echo "ERROR: is missing the JIRA Issue 'HPEFS-123'."
+			echo "ERROR: is missing the JIRA Issue Please enter valid JIRA Issue ID for example HPEFS-XXXXX."
 			echo "ERROR:"
 			echo "ERROR: Please fix the commit message and push again."		
 			echo "ERROR"
