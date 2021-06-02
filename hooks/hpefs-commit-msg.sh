@@ -1,4 +1,5 @@
 #!/bin/bash
+#HPEFS Script
 set -e
 
 zero_commit='0000000000000000000000000000000000000000'
