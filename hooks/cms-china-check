@@ -8,7 +8,7 @@
 # Organization Unit: CMS China
 # Team: CMS China DevOps
 #
-
+set -x
 # skip none CMS-China repo
 if [[ ! "$GITHUB_REPO_NAME" =~ ^"CMS-China/" ]]; then
     exit 0
@@ -171,3 +171,4 @@ while  read -r old_rev new_rev ref ; do
     exit 0
 done
 
+set +x
