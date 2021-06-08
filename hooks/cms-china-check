@@ -8,7 +8,6 @@
 # Organization Unit: CMS China
 # Team: CMS China DevOps
 #
-set -x
 # skip none MPC-China repo
 if [[ ! "$GITHUB_REPO_NAME" =~ "MPC-China/" ]]; then
     exit 0
@@ -112,13 +111,6 @@ while  read -r old_rev new_rev ref ; do
     INTEGRATION_BRANCH=`echo ${ref} | grep -E -c "${INTEGRATION_BRANCH_RE}"`
     USER_BRANCH=`echo ${ref} | grep -E -c "${USER_BRANCH_RE}"`
 
-    if [ ${NEXT_BRANCH} -eq 0 -a ${CPE_BRANCH} -eq 0 -a ${CUST_BRANCH} -eq 0 -a ${INTEGRATION_BRANCH} -eq 0 -a ${USER_BRANCH} -eq 0 ] ; then
-        # this is neither "standard" next or next- or _cpe branch, nor a user branch
-        echo "[POLICY] Updating this branch (${ref}) is not allowed"
-        echo "[POLICY] You are only allowed to update next, next-*, integration-*, *_cpe, *_cust and ${GITHUB_USER_LOGIN}-* branches"
-        exit 5
-    fi
-
     CREATE_BRANCH=0
     if [ "$old_rev" == "$ZEROREF" ] ; then
         if [ ${USER_BRANCH} -eq 0 -a ${INTEGRATION_BRANCH} -eq 0 ] ; then
@@ -127,6 +119,13 @@ while  read -r old_rev new_rev ref ; do
         else
             CREATE_BRANCH=1
         fi
+    fi
+
+    if [ ${NEXT_BRANCH} -eq 0 -a ${CPE_BRANCH} -eq 0 -a ${CUST_BRANCH} -eq 0 -a ${INTEGRATION_BRANCH} -eq 0 -a ${USER_BRANCH} -eq 0 ] ; then
+        # this is neither "standard" next or next- or _cpe branch, nor a user branch
+        echo "[POLICY] Updating this branch (${ref}) is not allowed"
+        echo "[POLICY] You are only allowed to update next, next-*, integration-*, *_cpe, *_cust and ${GITHUB_USER_LOGIN}-* branches"
+        exit 5
     fi
 
     if [ "$new_rev" == "$ZEROREF" ] ; then
@@ -159,7 +158,7 @@ while  read -r old_rev new_rev ref ; do
     fi
 
     # commit message check
-    tmp_file=`mktemp msgXXXXX`
+    tmp_file=`mktemp /tmp/msgXXXXX`
     for rev in ${missed_revs} ; do
         git cat-file commit ${rev} | sed '1,/^$/d' > $tmp_file
         if ! check_jiracr_nocr $tmp_file $rev ; then
@@ -170,5 +169,3 @@ while  read -r old_rev new_rev ref ; do
     rm -f $tmp_file
     exit 0
 done
-
-set +x
