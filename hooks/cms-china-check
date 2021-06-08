@@ -9,10 +9,8 @@
 # Team: CMS China DevOps
 #
 set -x
-sh --version
-# skip none CMS-China repo
-github_org_name=$(echo $GITHUB_REPO_NAME | cut -d "/" -f1)
-if [[ "$github_org_name" != "CMS-China" ]]; then
+# skip none MPC-China repo
+if [[ ! "$GITHUB_REPO_NAME" =~ "MPC-China/" ]]; then
     exit 0
 fi
 
