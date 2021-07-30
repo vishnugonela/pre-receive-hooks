@@ -22,7 +22,7 @@ while read -r oldrev newrev refname; do
       # Calculate range for new branch/updated branch
       [ "$oldrev" = "$zero_commit" ] && range="$newrev" || range="$oldrev..$newrev"
 
-    for commit in $(git rev-list "$range" --reverse); do
+    for commit in $(git rev-list "$range" --not --all); do
       message=$(git show -s --format=%B $commit)
       if ! echo $message | grep -iqE "$msg_regex"; then
         echo "ERROR:"
@@ -30,7 +30,7 @@ while read -r oldrev newrev refname; do
         echo "ERROR: $commit in ${refname#refs/heads/}"
         echo "ERROR: is missing the JIRA Issue Please enter valid JIRA Issue ID for example EZCP-XXXX (Valid Regex allowed: $msg_regex)"
         echo "ERROR:"
-        echo "ERROR: Please fix the commit message and push again."		
+        echo "ERROR: Please fix the commit message and push again."
         echo "ERROR: https://help.github.com/en/articles/changing-a-commit-message"
         echo "ERROR"
         exit 1
@@ -38,4 +38,3 @@ while read -r oldrev newrev refname; do
     done
   fi
 done
-fi
