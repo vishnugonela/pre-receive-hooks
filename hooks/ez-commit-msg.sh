@@ -42,6 +42,12 @@ while read -r oldrev newrev refname; do
           echo "Response: $JIRA Issue Does Not Exist. Please add the correct JIRA id to proceed with the commit."
           exit 1
         fi
+        #customfield_18503 is the Check-in Branch field
+        GetCheckInBranch=$(curl -s -X GET -u abhishikha.gupta@hpe.com:sF88cIllkXRSfSlKNxvNETPxkJQUxaxnwhF -H "Content-Type: application/json"  https://jira-pro.its.hpecorp.net:8443/rest/api/latest/issue/$JIRA?fields=customfield_18503 --insecure | grep -o "customfield_18503.*" | sed -e  's/customfield_18503":\(.*\)}}/\1/'  )
+        if [[ GetCheckInBranch != current_branch  ]] ; then
+          echo "ERROR: The branch $current_branch does not match the check-in branch $GetCheckInBranch added to the JIRA issue."
+          exit 1
+        fi
       fi
     done
   fi
