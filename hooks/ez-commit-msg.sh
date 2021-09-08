@@ -34,6 +34,14 @@ while read -r oldrev newrev refname; do
         echo "ERROR: https://help.github.com/en/articles/changing-a-commit-message"
         echo "ERROR"
         exit 1
+      else
+        JIRA=$(echo $message | grep -oE "$msg_regex")
+        Response=$(curl -s -X GET -u abhishikha.gupta@hpe.com:sF88cIllkXRSfSlKNxvNETPxkJQUxaxnwhF -H 'Content-Type: application/json'  'https://jira-pro.its.hpecorp.net:8443/rest/api/latest/issue/$JIRA' --write-out \\n%{http_code} --insecure | tail -1 )
+        echo "Response is $JIRA $Response"
+        if [[ "$Response" == 404 ]] ; then
+          echo "Response: $JIRA Issue Does Not Exist. Please add the correct JIRA id to proceed with the commit."
+          exit 1
+        fi
       fi
     done
   fi
