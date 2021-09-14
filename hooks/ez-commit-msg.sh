@@ -11,7 +11,7 @@ pattern='develop|main|integration|release'
 
 
 zero_commit='0000000000000000000000000000000000000000'
-msg_regex='/*(EZAWB|EZCP|EZCPQA|EZCTL|EZEPIC|EZESC|EZUX|EZKUBE|EZKD|EZDO|EZKP|EZML)-.+?'
+msg_regex="(EZAWB|EZCP|EZCPQA|EZCTL|EZEPIC|EZESC|EZUX|EZKUBE|EZKD|EZDO|EZKP|EZML)-[0-9]*"
 
 while read -r oldrev newrev refname; do
   current_branch=${refname#refs/heads/}
@@ -26,7 +26,7 @@ while read -r oldrev newrev refname; do
       message=$(git show -s --format=%B $commit)
       if ! echo $message | grep -iqE "$msg_regex"; then
         echo "ERROR:"
-        echo "ERROR: Your push was rejected because the commit"
+        echo "ERROR: Your push was rejected because the commit $message"
         echo "ERROR: $commit in ${refname#refs/heads/}"
         echo "ERROR: is missing the JIRA Issue Please enter valid JIRA Issue ID for example EZCP-XXXX (Valid Regex allowed: $msg_regex)"
         echo "ERROR:"
@@ -36,14 +36,14 @@ while read -r oldrev newrev refname; do
         exit 1
       else
         JIRA=$(echo $message | grep -oE "$msg_regex")
-        Response=$(curl -s -X GET -u abhishikha.gupta@hpe.com:sF88cIllkXRSfSlKNxvNETPxkJQUxaxnwhF -H 'Content-Type: application/json'  'https://jira-pro.its.hpecorp.net:8443/rest/api/latest/issue/$JIRA' --write-out \\n%{http_code} --insecure | tail -1 )
+        echo $EZ_JIRA_TOKEN
+        Response=$(curl -s -X GET -u hpecp-release:goxncTByeOPmDk6CEfyTq4XvGSqHEz823Oz -H "Content-Type: application/json"  "https://jira-pro.its.hpecorp.net:8443/rest/api/latest/issue/$JIRA" --write-out \\n%{http_code} --insecure | tail -1 )
         echo "Response is $JIRA $Response"
         if [[ "$Response" == 404 ]] ; then
-          echo "Response: $JIRA Issue Does Not Exist. Please add the correct JIRA id to proceed with the commit."
+          echo "ERROR: $JIRA Issue Does Not Exist. Please add the correct JIRA id to proceed with the commit."
           exit 1
         fi
-        #customfield_18503 is the Check-in Branch field
-        GetCheckInBranch=$(curl -s -X GET -u abhishikha.gupta@hpe.com:sF88cIllkXRSfSlKNxvNETPxkJQUxaxnwhF -H "Content-Type: application/json"  https://jira-pro.its.hpecorp.net:8443/rest/api/latest/issue/$JIRA?fields=customfield_18503 --insecure | grep -o "customfield_18503.*" | sed -e  's/customfield_18503":\(.*\)}}/\1/'  )
+        GetCheckInBranch=$(curl -s -X GET -u hpecp-release:goxncTByeOPmDk6CEfyTq4XvGSqHEz823Oz -H "Content-Type: application/json"  https://jira-pro.its.hpecorp.net:8443/rest/api/latest/issue/$JIRA?fields=customfield_18503 --insecure | grep -o "customfield_18503.*" | sed -e  's/customfield_18503":\(.*\)}}/\1/'  )
         if [[ GetCheckInBranch != current_branch  ]] ; then
           echo "ERROR: The branch $current_branch does not match the check-in branch $GetCheckInBranch added to the JIRA issue."
           exit 1
