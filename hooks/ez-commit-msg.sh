@@ -11,7 +11,7 @@ pattern='develop|main|integration|release'
 
 
 zero_commit='0000000000000000000000000000000000000000'
-msg_regex="(EZAWB|EZCP|EZCPQA|EZCTL|EZEPIC|EZESC|EZUX|EZKUBE|EZKD|EZDO|EZKP|EZML|EZQE)-[0-9]*"
+msg_regex='/*(EZQE|EZAWB|EZCP|EZCPQA|EZCTL|EZEPIC|EZESC|EZUX|EZKUBE|EZKD|EZDO|EZKP|EZML)-[0-9].+?'
 
 while read -r oldrev newrev refname; do
   current_branch=${refname#refs/heads/}
