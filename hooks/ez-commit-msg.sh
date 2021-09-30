@@ -11,7 +11,7 @@ pattern='develop|main|integration|release'
 
 
 zero_commit='0000000000000000000000000000000000000000'
-msg_regex="(EZAWB|EZCP|EZCPQA|EZCTL|EZEPIC|EZESC|EZUX|EZKUBE|EZKD|EZDO|EZKP|EZML)-[0-9]*"
+msg_regex="(EZAWB|EZCP|EZCPQA|EZCTL|EZEPIC|EZESC|EZUX|EZKUBE|EZKD|EZDO|EZKP|EZML|EZQE)-[0-9]*"
 
 while read -r oldrev newrev refname; do
   current_branch=${refname#refs/heads/}
@@ -34,21 +34,6 @@ while read -r oldrev newrev refname; do
         echo "ERROR: https://help.github.com/en/articles/changing-a-commit-message"
         echo "ERROR"
         exit 1
-      else
-        JIRA=$(echo $message | grep -oE "$msg_regex")
-        echo $EZ_JIRA_TOKEN
-        Response=$(curl -s -X GET -u hpecp-release:goxncTByeOPmDk6CEfyTq4XvGSqHEz823Oz -H "Content-Type: application/json"  "https://jira-pro.its.hpecorp.net:8443/rest/api/latest/issue/$JIRA" --write-out \\n%{http_code} --insecure | tail -1 )
-        echo "Response is $JIRA $Response"
-        if [[ "$Response" == 404 ]] ; then
-          echo "ERROR: $JIRA Issue Does Not Exist. Please add the correct JIRA id to proceed with the commit."
-          exit 1
-        fi
-        GetCheckInBranch=$(curl -s -X GET -u hpecp-release:goxncTByeOPmDk6CEfyTq4XvGSqHEz823Oz -H "Content-Type: application/json"  https://jira-pro.its.hpecorp.net:8443/rest/api/latest/issue/$JIRA?fields=customfield_18503 --insecure | grep -o "customfield_18503.*" | sed -e  's/customfield_18503":\(.*\)}}/\1/'  )
-        if [[ GetCheckInBranch != current_branch  ]] ; then
-          echo "ERROR: The branch $current_branch does not match the check-in branch $GetCheckInBranch added to the JIRA issue."
-          exit 1
-        fi
-      fi
     done
   fi
 done
