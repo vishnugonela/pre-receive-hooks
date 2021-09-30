@@ -26,7 +26,7 @@ while read -r oldrev newrev refname; do
       message=$(git show -s --format=%B $commit)
       if ! echo $message | grep -iqE "$msg_regex"; then
         echo "ERROR:"
-        echo "ERROR: Your push was rejected because the commit $message"
+        echo "ERROR: Your push was rejected because the commit \"$message\""
         echo "ERROR: $commit in ${refname#refs/heads/}"
         echo "ERROR: is missing the JIRA Issue Please enter valid JIRA Issue ID for example EZCP-XXXX (Valid Regex allowed: $msg_regex)"
         echo "ERROR:"
