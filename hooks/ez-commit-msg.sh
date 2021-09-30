@@ -34,6 +34,7 @@ while read -r oldrev newrev refname; do
         echo "ERROR: https://help.github.com/en/articles/changing-a-commit-message"
         echo "ERROR"
         exit 1
+      fi
     done
   fi
 done
