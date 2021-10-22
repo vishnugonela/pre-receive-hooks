@@ -9,7 +9,7 @@
 # Team: CMS China DevOps
 #
 # skip none MPC-China repo
-if [[ ! "$GITHUB_REPO_NAME" =~ "MPC-China/" ]]; then
+if [[ ! "$GITHUB_REPO_NAME" =~ ^"hpe/snap" && ! "$GITHUB_REPO_NAME" =~ ^"hpe/MPC-China" ]]; then
     exit 0
 fi
 
