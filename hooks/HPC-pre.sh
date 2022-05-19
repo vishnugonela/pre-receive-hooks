@@ -24,7 +24,12 @@ while read old_rev new_rev ref ; do
 		${GITHUB_REPO_NAME:-"NA/repo_unknown"}		\
 		$old_rev					\
 		$new_rev					\
-		$ref
+		$ref                                            \
+                ${GITHUB_VIA:-"NONE"}                           \
+                ${GITHUB_PULL_REQUEST_AUTHOR_LOGIN:-"NONE"}     \   
+                ${GITHUB_PULL_REQUEST_HEAD:-"NONE"}             \
+                ${GITHUB_PULL_REQUEST_BASE:-"NONE"}             \
+                $NULL
 	ERR=$(( $ERR + $? ))
 done
 exit $ERR
