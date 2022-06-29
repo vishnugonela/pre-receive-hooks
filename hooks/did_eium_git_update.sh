@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Name: git_pre-commit_validate
+# Description:  Script is used to eIUM GIT hooks to validate commit messages and lock branches
+# Author: Vishnu Gonela
+# Team: eIUM (DID)
+
 # source the function definitions
 
 QXCR_RE="QXCR[0-9]{10}([^0-9].*)?$"
