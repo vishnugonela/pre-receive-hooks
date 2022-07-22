@@ -30,16 +30,24 @@ i=0
 while [ ${i} -lt ${GIT_PUSH_OPTION_COUNT:-0} ]
 do
     eval push_opt="\${GIT_PUSH_OPTION_${i}}"
+    : push_opt="${push_opt}"
     case "${push_opt}" in
         #
         # enable debugging
         #
         hpe-hpc-shs-protector-hook-debug)
             DEBUG=$((${DEBUG}+1))
-            if [ ${DEBUG} -eq 2 ]
-            then
-                set -x
-            fi
+            case ${DEBUG} in
+                2)
+                    printenv | sort -t=
+                    ;;
+                3)
+                    set -x
+                    ;;
+                *)
+                    :
+                    ;;
+            esac
             ;;
 
         #
@@ -57,15 +65,16 @@ do
         synchronizer)
             case ${GITHUB_USER_LOGIN} in
                 #
-                # what is the specific jenkins account username used by HPC and SHS?
+                # github user account used by hpc/cray jenkins jobs
                 #
-                jenkins....)
+                hpe-cray-svc-jenkins)
                     upstream_synching=1
                     ;;
                 #
-                # temporary
+                # users that may syncrhonize
                 #
-                dennis-c-josifovich)
+                dennis-c-josifovich     |\
+                mike-uttormark          )
                     upstream_synching=1
                     ;;
                 *)
@@ -289,6 +298,6 @@ done
 #
 if [ ${exit_value} -ne 0 ]
 then
-    printf '%s: ERROR: one or more error detected. pushed rejected for: repo="%s" username="%s"\n' "${scriptname}" "${GITHUB_REPO_NAME}" "${GITHUB_USER_LOGIN}"
+    printf '%s: ERROR: one or more errors detected. pushed rejected for: repo="%s" username="%s"\n' "${scriptname}" "${GITHUB_REPO_NAME}" "${GITHUB_USER_LOGIN}"
 fi
 exit ${exit_value}
