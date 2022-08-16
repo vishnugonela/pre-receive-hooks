@@ -197,9 +197,11 @@ do
                 fi
             fi
             ;;
+
         #
         # certain tags are allowed to be created by not modified or deleted.
         #
+        hpe/hpc-shs-*,refs/tags/release/slingshot-*spt          |\
         hpe/hpc-shs-*,refs/tags/llnl-*                          |\
         hpe/hpc-shs-libfabric-netc,refs/tags/v*.x-ss*-spt       )
             if [ ${oldrev} != ${zero_commit} ]
