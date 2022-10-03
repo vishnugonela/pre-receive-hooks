@@ -266,6 +266,9 @@ do
         hpe/hpc-shs-libfabric,refs/heads/memhooks-test          |\
 \
         hpe/hpc-shs-libfabric-netc,refs/heads/integration       |\
+        hpe/hpc-shs-libfabric-netc,refs/heads/pre-v1.15.x-ss11  |\
+        hpe/hpc-shs-libfabric-netc,refs/heads/v1.9.x-ss10       |\
+        hpe/hpc-shs-libfabric-netc,refs/heads/v1.10.x-ss10      |\
 \
         hpe/hpc-shs-mellanox-ofed,refs/heads/integration                                                                                |\
         hpe/hpc-shs-mellanox-ofed,refs/heads/release/SKERN-5263-build-kasan-enabled-kernel-to-debug-nvidia-null-pointer-at-nersc        |\
