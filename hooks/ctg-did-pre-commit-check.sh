@@ -2,8 +2,9 @@
 
 # Name: ctg-did-pre-commit-check.sh
 # Description:  Script is used to eIUM GIT hooks to validate commit messages 
-# Author: Vishnu Gonela
-# Team: eIUM (DID)
+# Organization Unit: CTG
+# Author: sanoymathew@hpe.com
+# Team: CTG Digital Identity
 
 DEBUG=0
 QXCR_RE="QXCR[0-9]{10}([^0-9].*)?$"
