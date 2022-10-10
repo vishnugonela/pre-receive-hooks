@@ -67,6 +67,7 @@ find_branch_base()
 #Few users can pass the push option --push-option=mod_admin to get the admin privilege
 #eg. git push --push-option=mod-admin
 ENABLE_ADMIN=0
+ALLOW_TAGS=YES
 i=0
 while [ ${i} -lt ${GIT_PUSH_OPTION_COUNT:-0} ]
 do
@@ -86,6 +87,7 @@ do
 			echo "[POLICY] Requested trace mode!"
 			DEBUG=2
 			set -x
+			printenv | sort -t=
 		;;
 		*)
 			:
@@ -114,7 +116,7 @@ while read -r oldrev newrev refname; do
 	echo "Enforcing Policies..."
 	
 	if [ -z "${GIT_USER}" ] ; then
-	    echo "[POLICY] Environment variable GIT_USER not set"
+	    echo "[POLICY] Environment variable GIT_USER OR GITHUB_USER_LOGIN not set"
 	    echo "[POLICY] Update rejected"
 	    exit 6
 	fi
@@ -144,6 +146,23 @@ while read -r oldrev newrev refname; do
 	    exit 0
 	fi
 	
+
+	TAG_RE="^refs/tags/"
+	echo ${refname} | grep -E "${TAG_RE}" > /dev/null 2>&1
+	if [ $? -eq 0 ] ; then
+		if [ "$ALLOW_TAGS" == "YES" ] ; then
+		        if [ "$oldrev" == "$ZEROREF" ] ; then
+				exit 0
+		        else
+				echo "[POLICY] You are only allowed to create new tags"
+				exit 9
+			fi
+		else
+			echo "[POLICY] Updating tags is not allowed"
+			exit 7
+		fi 
+	fi
+
 	INTEGRATION_BRANCH_RE="(^refs/heads/integration-)"
 	USER_BRANCH_RE="^refs/heads/${GIT_USER}-"
 	INTEGRATION_BRANCH=`echo ${refname} | grep -E -c "${INTEGRATION_BRANCH_RE}"`
