@@ -126,9 +126,11 @@ while read -r oldrev newrev refname; do
 	if [ ${ENABLE_ADMIN} -ne 0 ]; then
 			case "${GIT_USER}" in 
 			  "vishnug" | \
-			  "anand.subramanian" | \
+			  "anand-subramanian" | \
 			  "rajeshn" | \
-			  "guangqi.gong" | \
+			  "guangqi-gong" | \
+			  "sukhwinder-kaur" | \
+			  "adeo" | \
 			  "sanoymathew" )
 	
 				IS_ADMIN=1
