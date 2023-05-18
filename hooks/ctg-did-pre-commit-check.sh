@@ -131,6 +131,7 @@ while read -r oldrev newrev refname; do
 			  "guangqi-gong" | \
 			  "sukhwinder-kaur" | \
 			  "adeo" | \
+			  "rajni-agnihotri" | \
 			  "sanoymathew" )
 	
 				IS_ADMIN=1
