@@ -33,6 +33,40 @@ do
     : push_opt="${push_opt}"
     case "${push_opt}" in
         #
+        # a hack to probe the environment to determine aspects about it
+        # including tools available since we do not have any other access
+        # currently.
+        #
+        # when this option is used, this hook will reject all pushed
+        # changes.
+        #
+        hpe-hpc-shs-protector-hook-probe)
+            set -x
+            printf '%s: PROBE\n\n' "${scriptname}"
+            uname -a
+            whoami
+            printenv
+            ls /bin
+            ls /usr/bin
+            git --version
+            sh --version
+            bash --version
+            dash --version
+            sed --version
+            grep --version
+            perl --version
+            awk --version
+            gawk --version
+            python3 --version
+            printf '%s: args="%s"\n' "${scriptname}" "${*}"
+            printf '%s: exiting\n\n' "${scriptname}"
+            #
+            # exit indicating failure so push is blocked
+            #
+            exit 1
+            ;;
+
+        #
         # enable debugging
         #
         hpe-hpc-shs-protector-hook-debug)
@@ -129,6 +163,20 @@ do
         *)
             :
             ;;
+        #
+        # for future changes, interpret the values of oldrev and newrev
+        # then set a variable as to the action (create, destroy, modify)
+        # that is being attempted
+        #
+        #               ${zero_commit},?*,?*)
+        #                   action=create
+        #                   ;;
+        #               ?*,${zero_commit},?*)
+        #                   action=destroy
+        #                   ;;
+        #               ?*,?*,?*)
+        #                   action=modify
+        #                   ;;
     esac
 
     #
@@ -137,8 +185,9 @@ do
     #
     case ${GITHUB_REPO_NAME},${refname} in
         #
-        # allow list with more specific matches overriding more generic deny matches
+        # more specific matches overriding more generic matches
         #
+
         hpe/hpc-shs-libfabric-netc,refs/tags/v*.x-ss*-mpt       )
             if [ ${newrev} == ${zero_commit} ]
             then
@@ -151,6 +200,20 @@ do
                 fi
             fi
             ;;
+
+        hpe/hpc-shs-libfabric-netc,refs/tags/v*.x-ss*-u*pt      )
+            if [ ${oldrev} != ${zero_commit} ]
+            then
+                printf '%s: ERROR: v*.x-ss*-u*pt tags may only be created: repo="%s" refname="%s"\n' "${scriptname}" "${GITHUB_REPO_NAME}" "${refname}"
+                exit_value=1
+            else
+                if [ ${DEBUG} -ne 0 ]
+                then
+                    printf '%s: DEBUG: push allowed: repo="%s" user="%s" refname="%s" oldrev="%s" newrev="%s"\n' "${scriptname}" "${GITHUB_REPO_NAME}" "${GITHUB_USER_LOGIN}" "${refname}" "${oldrev}" "${newrev}"
+                fi
+            fi
+            ;;
+
         #
         # non-active release branches & tags are read-only
         #
@@ -232,6 +295,12 @@ do
         hpe/hpc-shs-libfabric-netc,refs/heads/main                                              |\
         hpe/hpc-shs-libfabric-netc,refs/heads/pr/update-nroff-generated-man-pages-v1.14.1       |\
         hpe/hpc-shs-libfabric-netc,refs/heads/v*.x                                              |\
+        hpe/hpc-shs-libfabric-netc,refs/heads/v1.9.x-ss10                                       |\
+        hpe/hpc-shs-libfabric-netc,refs/heads/v1.10.x-ss10                                      |\
+        hpe/hpc-shs-libfabric-netc,refs/heads/v1.11.x-ss10                                      |\
+        hpe/hpc-shs-libfabric-netc,refs/heads/v1.12.x-ss10                                      |\
+        hpe/hpc-shs-libfabric-netc,refs/pull-requests-ss10/*                                    |\
+        hpe/hpc-shs-libfabric-netc,refs/pull-ss10/*                                             |\
         hpe/hpc-shs-libfabric-netc,refs/tags/dev                                                |\
         hpe/hpc-shs-libfabric-netc,refs/tags/v*                                                 |\
 \
@@ -267,8 +336,9 @@ do
 \
         hpe/hpc-shs-libfabric-netc,refs/heads/integration       |\
         hpe/hpc-shs-libfabric-netc,refs/heads/pre-v1.15.x-ss11  |\
-        hpe/hpc-shs-libfabric-netc,refs/heads/v1.9.x-ss10       |\
-        hpe/hpc-shs-libfabric-netc,refs/heads/v1.10.x-ss10      |\
+        hpe/hpc-shs-libfabric-netc,refs/tags/shs-*-ss10         |\
+        hpe/hpc-shs-libfabric-netc,refs/tags/shasta-*-ss10      |\
+        hpe/hpc-shs-libfabric-netc,refs/tags/dev-ss10           |\
 \
         hpe/hpc-shs-mellanox-ofed,refs/heads/integration                                                                                |\
         hpe/hpc-shs-mellanox-ofed,refs/heads/release/SKERN-5263-build-kasan-enabled-kernel-to-debug-nvidia-null-pointer-at-nersc        |\
