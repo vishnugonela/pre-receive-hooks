@@ -128,10 +128,11 @@ while read -r oldrev newrev refname; do
 			  "vishnug" | \
 			  "anand-subramanian" | \
 			  "rajeshn" | \
-			  "guangqi-gong" | \
+			  "kishore-kumar-j-v" | \
+			  "prashanth-ga" | \
 			  "sukhwinder-kaur" | \
 			  "adeo" | \
-			  "rajni-agnihotri" | \
+			  "siripuram" | \
 			  "sanoymathew" )
 	
 				IS_ADMIN=1
