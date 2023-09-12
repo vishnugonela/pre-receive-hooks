@@ -246,9 +246,10 @@ do
             ;;
 
         #
-        # active release branches may be created and modified but not deleted
+        # active release branches and staging branches may be created and modified but not deleted
         #
-        hpe/hpc-shs-*,refs/heads/release/slingshot-*    )
+        hpe/hpc-shs-*,refs/heads/release/slingshot-*    |\
+        hpe/hpc-shs-*,refs/heads/staging/slingshot-*    )
             if [ ${newrev} == ${zero_commit} ]
             then
                 printf '%s: ERROR: release branches may not be deleted: repo="%s" refname="%s"\n' "${scriptname}" "${GITHUB_REPO_NAME}" "${refname}"
@@ -262,9 +263,10 @@ do
             ;;
 
         #
-        # certain tags are allowed to be created by not modified or deleted.
+        # certain tags are allowed to be created but not modified or deleted.
         #
         hpe/hpc-shs-*,refs/tags/release/slingshot-*spt          |\
+        hpe/hpc-shs-*,refs/tags/staging/slingshot-*spt          |\
         hpe/hpc-shs-*,refs/tags/llnl-*                          |\
         hpe/hpc-shs-libfabric-netc,refs/tags/v*.x-ss*-spt       )
             if [ ${oldrev} != ${zero_commit} ]
