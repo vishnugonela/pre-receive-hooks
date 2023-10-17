@@ -188,10 +188,11 @@ do
         # more specific matches overriding more generic matches
         #
 
-        hpe/hpc-shs-libfabric-netc,refs/tags/v*.x-ss*-mpt       )
+        hpe/hpc-shs-libfabric-netc,refs/tags/v*.x-ss*-mpt       |\
+        hpe/hpc-shs-libfabric-netc,refs/tags/pre-v*.x-ss*-mpt   )
             if [ ${newrev} == ${zero_commit} ]
             then
-                printf '%s: ERROR: v*.x-ss*-mpt tags may not be deleted: repo="%s" refname="%s"\n' "${scriptname}" "${GITHUB_REPO_NAME}" "${refname}"
+                printf '%s: ERROR: v*.x-ss*-mpt/pre-v*.x-ss*-mpt tags may not be deleted: repo="%s" refname="%s"\n' "${scriptname}" "${GITHUB_REPO_NAME}" "${refname}"
                 exit_value=1
             else
                 if [ ${DEBUG} -ne 0 ]
@@ -201,7 +202,8 @@ do
             fi
             ;;
 
-        hpe/hpc-shs-libfabric-netc,refs/tags/v*.x-ss*-u*pt      )
+        hpe/hpc-shs-libfabric-netc,refs/tags/v*.x-ss*-u*pt      |\
+        hpe/hpc-shs-libfabric-netc,refs/tags/pre-v*.x-ss*-u*pt  )
             if [ ${oldrev} != ${zero_commit} ]
             then
                 printf '%s: ERROR: v*.x-ss*-u*pt tags may only be created: repo="%s" refname="%s"\n' "${scriptname}" "${GITHUB_REPO_NAME}" "${refname}"
@@ -268,7 +270,8 @@ do
         hpe/hpc-shs-*,refs/tags/release/slingshot-*spt          |\
         hpe/hpc-shs-*,refs/tags/staging/slingshot-*spt          |\
         hpe/hpc-shs-*,refs/tags/llnl-*                          |\
-        hpe/hpc-shs-libfabric-netc,refs/tags/v*.x-ss*-spt       )
+        hpe/hpc-shs-libfabric-netc,refs/tags/v*.x-ss*-spt       |\
+        hpe/hpc-shs-libfabric-netc,refs/tags/pre-v*.x-ss*-spt   )
             if [ ${oldrev} != ${zero_commit} ]
             then
                 printf '%s: ERROR: read-only reference: repo="%s" refname="%s"\n' "${scriptname}" "${GITHUB_REPO_NAME}" "${refname}"
