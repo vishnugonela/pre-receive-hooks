@@ -17,16 +17,17 @@ SSH="ssh $SSH_OPTIONS $SSH_ACCESS"
 # Also was https://github.hpe.com/GitHub/IssueTracking/issues/97
 [ "${GIT_DIR: -9}" == ".wiki.git" ] && exit 0 || :
 
-# XXX: This is used when we want developers to push to dev/ branches
-#      while salsa is NOT available, like in very long scheduled
-#      maintenance in Chippewa/WI on Nov/8th/2023 -> Nov/13th/2023.
-# Return 0 when the ref contains dev/...
-REF=${ref##refs/heads/}
-REF=${REF##refs/tags/}
-echo $REF | grep -q ^dev/ && exit 0 || :
-
 ERR=0
 while read old_rev new_rev ref ; do
+	# XXX: This is used when we want developers to push to dev/ branches
+	#      while salsa is NOT available, like in very long scheduled
+	#      maintenance in Chippewa/WI on Nov/8th/2023 -> Nov/13th/2023.
+	# Next if ref contains dev/...
+	REF=${ref##refs/heads/}
+	REF=${REF##refs/tags/}
+	echo $REF | grep -q ^dev/ && continue
+
+	# Ask salsa
 	$SSH hooks pre  					\
 		${GITHUB_USER_LOGIN:-"user_unknown"}		\
 		${GITHUB_REPO_NAME:-"NA/repo_unknown"}		\
